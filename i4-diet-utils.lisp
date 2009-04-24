@@ -39,3 +39,6 @@ Otherwise return the first form or NIL if the body is empty"
 (defmacro dbg-show* (&rest exprs)
   (maybe-progn
    (loop for expr in exprs collect `(dbg-show ,expr))))
+
+(defun trim (str)
+  (string-trim '(#\space #\tab #\newline #\return) (or str "")))

@@ -6,4 +6,5 @@
            #:dbg-values
 	   #:dbg*
 	   #:dbg-show
-           #:dbg-show*))
+           #:dbg-show*
+           #:trim))
