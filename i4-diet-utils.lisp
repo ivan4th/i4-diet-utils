@@ -42,3 +42,8 @@ Otherwise return the first form or NIL if the body is empty"
 
 (defun trim (str)
   (string-trim '(#\space #\tab #\newline #\return) (or str "")))
+
+(defun get-real-seconds ()
+  "Return INTERNAL-REAL-TIME value converted to seconds (DOUBLE-FLOAT)"
+  (/ (coerce (get-internal-real-time) 'double-float)
+     internal-time-units-per-second))
