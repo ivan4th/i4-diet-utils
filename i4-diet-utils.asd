@@ -4,6 +4,6 @@
   :version "0.1"
   :serial t
   :description "Some utils that aren't in alexandria"
-  :depends-on (:alexandria)
+  :depends-on (:alexandria :cl-ppcre)
   :components ((:file "package")
                (:file "i4-diet-utils")))

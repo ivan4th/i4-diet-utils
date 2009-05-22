@@ -7,5 +7,12 @@
 	   #:dbg*
 	   #:dbg-show
            #:dbg-show*
+           #:get-real-seconds
+           #:lispize
+           #:capitalize
            #:trim
-           #:get-real-seconds))
+           #:delispize
+           #:delispize*
+           #:null-if-empty
+           #:with-match
+           #:rx-match-case))
