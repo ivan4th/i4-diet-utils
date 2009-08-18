@@ -7,6 +7,10 @@
 	   #:dbg*
 	   #:dbg-show
            #:dbg-show*
+           #:xlet
+           #:xlet*
+           #:xflet
+           #:xlabels
            #:get-real-seconds
            #:lispize
            #:capitalize

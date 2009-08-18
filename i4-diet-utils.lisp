@@ -40,6 +40,48 @@ Otherwise return the first form or NIL if the body is empty"
   (maybe-progn
    (loop for expr in exprs collect `(dbg-show ,expr))))
 
+(defun %xlet (binds body)
+  (multiple-value-bind (remaining-forms decls) (parse-body body)
+    `(,@decls
+      (setf ,@(loop for (name nil) in binds
+                    for sym = (intern (concat "$" (symbol-name name))
+                                      (symbol-package name))
+                    append `((symbol-value ',sym) ,name)))
+      ,@remaining-forms)))
+
+(defun %xflet (binds body)
+  (multiple-value-bind (remaining-forms decls) (parse-body body)
+    `(,@decls
+      (setf ,@(loop for (name . nil) in binds
+                    for name-symbol = (if (consp name) (second name) name)
+                    for sym = (intern (concat "$" (symbol-name name-symbol))
+                                      (symbol-package name-symbol))
+                    for global-name = (if (consp name) `(setf ,sym) sym)
+                    append `((fdefinition ',global-name) #',name)))
+      ,@remaining-forms)))
+
+(defmacro xlet (binds &body body)
+  "Like LET, but also for each NAME being bound
+  assign its value to global variable with name $NAME in
+  the same package"
+  `(let ,binds ,@(%xlet binds body)))
+
+(defmacro xlet* (binds &body body)
+  "Like LET*, but also for each NAME being bound
+  assign its value to global variable with name $NAME in
+  the same package"
+  `(let* ,binds ,@(%xlet binds body)))
+
+(defmacro xflet (binds &body body)
+  "Like LET, but also for each NAME being fbound
+  also make a global function named $NAME"
+  `(flet ,binds ,@(%xflet binds body)))
+
+(defmacro xlabels (binds &body body)
+  "Like LET, but also for each NAME being fbound
+  also make a global function named $NAME"
+  `(labels ,binds ,@(%xflet binds body)))
+
 (defun get-real-seconds ()
   "Return INTERNAL-REAL-TIME value converted to seconds (DOUBLE-FLOAT)"
   (/ (coerce (get-internal-real-time) 'double-float)
