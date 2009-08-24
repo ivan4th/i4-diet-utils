@@ -1,5 +1,5 @@
 (defpackage :i4-diet-utils
-  (:use :cl :alexandria)
+    (:use :cl :alexandria :flexi-streams)
   (:export #:concat
            #:maybe-progn
            #:dbg
@@ -19,4 +19,8 @@
            #:delispize*
            #:null-if-empty
            #:with-match
-           #:rx-match-case))
+           #:rx-match-case
+           #:snarf-file
+           #:with-input-file
+           #:with-overwrite
+           #:write-file))

@@ -44,8 +44,7 @@ Otherwise return the first form or NIL if the body is empty"
   (multiple-value-bind (remaining-forms decls) (parse-body body)
     `(,@decls
       (setf ,@(loop for (name nil) in binds
-                    for sym = (intern (concat "$" (symbol-name name))
-                                      (symbol-package name))
+                    for sym = (intern (concat "$" (symbol-name name)))
                     append `((symbol-value ',sym) ,name)))
       ,@remaining-forms)))
 
@@ -54,8 +53,7 @@ Otherwise return the first form or NIL if the body is empty"
     `(,@decls
       (setf ,@(loop for (name . nil) in binds
                     for name-symbol = (if (consp name) (second name) name)
-                    for sym = (intern (concat "$" (symbol-name name-symbol))
-                                      (symbol-package name-symbol))
+                    for sym = (intern (concat "$" (symbol-name name-symbol)))
                     for global-name = (if (consp name) `(setf ,sym) sym)
                     append `((fdefinition ',global-name) #',name)))
       ,@remaining-forms)))
@@ -188,3 +186,41 @@ Otherwise return the first form or NIL if the body is empty"
 				(return-from ,blk ,(maybe-progn forms)))))
 			 (expand (rest cases)))))))
 	`(block ,blk ,(maybe-progn (expand cases)))))))
+
+(defmacro with-input-file ((file-var file &key (external-format :utf-8)) &body body)
+  (once-only (file external-format) ; keep order of evaluation
+    (let ((in (gensym)))
+      `(with-open-file (,in ,file :direction :input :element-type '(unsigned-byte 8))
+         (let ((,file-var (make-flexi-stream ,in :external-format ,external-format)))
+           ,@body)))))
+
+(defun snarf-file (file &key (external-format :utf-8))
+  (with-output-to-string (out)
+    (with-input-file (in file :external-format external-format)
+      (loop for read = (read-line in nil nil)
+            while read
+            do (princ read out)
+            do (terpri out)))))
+
+(defmacro with-overwrite ((file-var file &key (external-format :utf-8)) &body body)
+  (once-only (file external-format) ; keep order of evaluation
+    (let ((out (gensym)))
+      `(with-open-file (,out ,file :direction :output
+                             :if-does-not-exist :create
+                             :if-exists :supersede
+                             :element-type '(unsigned-byte 8))
+         (let ((,file-var (make-flexi-stream ,out :external-format ,external-format)))
+           ,@body)))))
+
+(defun write-file (string file &key external-format)
+  (with-overwrite (out file :external-format external-format)
+    (write-string string out)))
+
+(defmacro with-overwrite ((file-var file &key external-format) &body body)
+  (let ((out (gensym)))
+    `(with-open-file (,out ,file :direction :output
+			   :if-does-not-exist :create
+			   :if-exists :supersede
+			   :element-type '(unsigned-byte 8))
+       (let ((,file-var (make-flexi-stream ,out :external-format (or ,external-format :utf-8))))
+	 ,@body))))
