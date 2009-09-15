@@ -224,3 +224,28 @@ Otherwise return the first form or NIL if the body is empty"
 			   :element-type '(unsigned-byte 8))
        (let ((,file-var (make-flexi-stream ,out :external-format (or ,external-format :utf-8))))
 	 ,@body))))
+
+(define-constant +unix-epoch+ (encode-universal-time 0 0 0 1 1 1970 0))
+
+(defun unix-timestamp->universal-time (timestamp)
+  (+ (round timestamp) +unix-epoch+))
+
+(defun universal-time->unix-timestamp (time)
+  (assert (>= time +unix-epoch+) ()
+          "cannot convert time to UNIX timestamp: ~s" time)
+  (- time +unix-epoch+))
+
+(defun format-iso8601-datetime (time &key separate-p utc-p)
+  "Return a ISO8601 date and time string"
+  (setf time (or time (get-universal-time)))
+  (multiple-value-bind (second minute hour day month year day-of-week)
+      (if utc-p
+          (decode-universal-time time 0)
+          (decode-universal-time time))
+    (declare (ignore day-of-week))
+    (with-standard-io-syntax
+        (format nil "~4,'0d-~2,'0d-~2,'0d~a~2,'0d:~2,'0d:~2,'0d~a"
+                year month day
+                (if separate-p " " "T")
+                hour minute second
+                (if utc-p "Z" "")))))
