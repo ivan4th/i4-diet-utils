@@ -249,3 +249,14 @@ Otherwise return the first form or NIL if the body is empty"
                 (if separate-p " " "T")
                 hour minute second
                 (if utc-p "Z" "")))))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun read-dbg-show (stream char n)
+    (declare (ignore n))
+    (assert (eql char #\@))
+    (list 'dbg-show (read stream t nil t))))
+
+;; readtables
+(named-readtables:defreadtable :i4-debug
+  (:merge :standard)
+  (:dispatch-macro-char #\# #\@ 'read-dbg-show))
