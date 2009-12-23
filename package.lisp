@@ -26,4 +26,5 @@
            #:write-file
            #:unix-timestamp->universal-time
            #:universal-time->unix-timestamp
-           #:format-iso8601-datetime))
+           #:format-iso8601-datetime
+           #:asdf-pathname))

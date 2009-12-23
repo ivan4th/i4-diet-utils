@@ -260,3 +260,11 @@ Otherwise return the first form or NIL if the body is empty"
 (named-readtables:defreadtable :i4-debug
   (:merge :standard)
   (:dispatch-macro-char #\# #\@ 'read-dbg-show))
+
+;;; ASDF:SYSTEM-RELATIVE-PATHNAME fails if the system definition
+;;; has :PATHNAME argument
+(defun asdf-pathname (system relative-pathname)
+  (truename
+   (merge-pathnames relative-pathname
+                    (asdf:component-relative-pathname
+                     (asdf:find-system system)))))
