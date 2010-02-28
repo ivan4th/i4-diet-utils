@@ -7,6 +7,7 @@
 	   #:dbg*
 	   #:dbg-show
            #:dbg-show*
+           #:sv
            #:xlet
            #:xlet*
            #:xflet

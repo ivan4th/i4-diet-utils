@@ -40,6 +40,9 @@ Otherwise return the first form or NIL if the body is empty"
   (maybe-progn
    (loop for expr in exprs collect `(dbg-show ,expr))))
 
+(defmacro sv (name value)
+  `(defparameter ,name ,value))
+
 (defun %xlet (binds body)
   (multiple-value-bind (remaining-forms decls) (parse-body body)
     `(,@decls
