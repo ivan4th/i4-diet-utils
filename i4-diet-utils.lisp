@@ -269,5 +269,8 @@ Otherwise return the first form or NIL if the body is empty"
 (defun asdf-pathname (system relative-pathname)
   (truename
    (merge-pathnames relative-pathname
-                    (asdf:component-relative-pathname
-                     (asdf:find-system system)))))
+                    (let ((p (asdf:component-relative-pathname
+                              (asdf:find-system system))))
+                      (make-pathname :host (pathname-host p)
+                                     :device (pathname-device p)
+                                     :directory (pathname-directory p))))))
