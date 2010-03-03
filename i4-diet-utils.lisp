@@ -215,17 +215,17 @@ Otherwise return the first form or NIL if the body is empty"
          (let ((,file-var (make-flexi-stream ,out :external-format ,external-format)))
            ,@body)))))
 
-(defun write-file (string file &key external-format)
+(defun write-file (string file &key (external-format :utf-8))
   (with-overwrite (out file :external-format external-format)
     (write-string string out)))
 
-(defmacro with-overwrite ((file-var file &key external-format) &body body)
+(defmacro with-overwrite ((file-var file &key (external-format :utf-8)) &body body)
   (let ((out (gensym)))
     `(with-open-file (,out ,file :direction :output
 			   :if-does-not-exist :create
 			   :if-exists :supersede
 			   :element-type '(unsigned-byte 8))
-       (let ((,file-var (make-flexi-stream ,out :external-format (or ,external-format :utf-8))))
+       (let ((,file-var (make-flexi-stream ,out :external-format ,external-format)))
 	 ,@body))))
 
 (define-constant +unix-epoch+ (encode-universal-time 0 0 0 1 1 1970 0))
