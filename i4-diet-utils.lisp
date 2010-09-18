@@ -274,3 +274,11 @@ Otherwise return the first form or NIL if the body is empty"
                       (make-pathname :host (pathname-host p)
                                      :device (pathname-device p)
                                      :directory (pathname-directory p))))))
+
+(defun containing-directory (pathname)
+  (make-pathname :host (pathname-host pathname)
+                 :device (pathname-device pathname)
+                 :directory (if (and (pathname-name pathname)
+                                     (not (eq :unspecific (pathname-name pathname))))
+                                (pathname-directory pathname)
+                                (butlast (pathname-directory pathname)))))
