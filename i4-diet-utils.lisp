@@ -14,7 +14,6 @@ Otherwise return the first form or NIL if the body is empty"
       (first body)))
 
 (defun dbg (fmt &rest args)
-  "Print debugging message when *prevalence-debug* is true"
   (let ((*print-readably* nil))
     (format *debug-io* "~&;; ~?~%" fmt args)))
 
@@ -31,12 +30,17 @@ Otherwise return the first form or NIL if the body is empty"
        (apply #'values ,result))))
 
 (defmacro dbg-show (expr)
-  (with-gensyms (values)
-    `(let ((,values (multiple-value-list ,expr)))
-       (dbg "~s = ~{~s~^ ~}" ',expr ,values)
-       (apply #'values ,values))))
+  (if (stringp expr)
+      `(dbg "~a" ,expr)
+      (with-gensyms (values)
+        `(let ((,values (multiple-value-list ,expr)))
+           (dbg "~s = ~{~s~^ ~}" ',expr ,values)
+           (apply #'values ,values)))))
 
 (defmacro dbg-show* (&rest exprs)
+  (when (stringp (first exprs))
+    (setf exprs (cons (concat (first exprs) ":")
+                      (rest exprs))))
   (maybe-progn
    (loop for expr in exprs collect `(dbg-show ,expr))))
 
