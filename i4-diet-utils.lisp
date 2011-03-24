@@ -110,7 +110,7 @@ Otherwise return the first form or NIL if the body is empty"
               (char-upcase (char result 0)))
         result)))
 
-(defun delispize (name &optional camel-case)
+(defun delispize (name &optional camel-case spaces-p)
   (setf name (string-downcase name))
   (labels ((rec (start)
              (let* ((pos (position #\- name :start start))
@@ -119,9 +119,13 @@ Otherwise return the first form or NIL if the body is empty"
                             sub
                             (capitalize sub))))
                (if pos
-                   (concatenate 'string seg (rec (1+ pos)))
+                   (concatenate 'string
+                                seg
+                                (if spaces-p " " "")
+                                (rec (1+ pos)))
                    seg))))
-    (rec 0)))
+    ;; adjust output type, (coerce (rec 0) 'string) isn't sufficient for SBCL
+    (concatenate 'string (rec 0) "")))
 
 (defun delispize* (name &optional camel-case)
   (if (stringp name)
