@@ -44,7 +44,7 @@ Otherwise return the first form or NIL if the body is empty"
   (maybe-progn
    (loop for expr in exprs collect `(dbg-show ,expr))))
 
-(defmacro sv (name value)
+(defmacro sv (&optional (name '$a) (value '*))
   `(defparameter ,name ,value))
 
 (defun %xlet (binds body)
