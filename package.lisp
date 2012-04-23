@@ -2,6 +2,8 @@
     (:use :cl :alexandria :flexi-streams)
   (:export #:concat
            #:maybe-progn
+           :*dbg-timestamps*
+           #:dbg-timestamp
            #:dbg
            #:dbg-values
 	   #:dbg*

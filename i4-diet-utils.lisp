@@ -1,5 +1,7 @@
 (in-package :i4-diet-utils)
 
+(defvar *dbg-timestamps* nil)
+
 (defun concat (&rest values)
   "Concatenate string representations (PRINC-TO-STRING) of VALUES"
   (apply #'concatenate 'string
@@ -13,9 +15,15 @@ Otherwise return the first form or NIL if the body is empty"
       `(progn ,@body)
       (first body)))
 
+(defun dbg-timestamp ()
+  (when *dbg-timestamps*
+    (concat (format-iso8601-datetime (get-universal-time) :separate-p t) ": ")))
+
 (defun dbg (fmt &rest args)
   (let ((*print-readably* nil))
-    (format *debug-io* "~&;; ~?~%" fmt args)))
+    (format *debug-io* "~&~:[;; ~;~:*~a~]~?~%"
+            (dbg-timestamp)
+            fmt args)))
 
 (defmacro dbg* (title &rest args)
   (flet ((arg-ex (arg)
