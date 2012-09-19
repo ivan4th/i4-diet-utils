@@ -31,4 +31,5 @@
            #:universal-time->unix-timestamp
            #:format-iso8601-datetime
            #:asdf-pathname
-           #:containing-directory))
+           #:containing-directory
+           #:parse-double-float))

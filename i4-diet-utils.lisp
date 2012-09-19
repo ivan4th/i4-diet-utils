@@ -298,3 +298,10 @@ Otherwise return the first form or NIL if the body is empty"
                                      (not (eq :unspecific (pathname-name pathname))))
                                 (pathname-directory pathname)
                                 (butlast (pathname-directory pathname)))))
+
+(defun parse-double-float (str)
+  (let ((str (substitute #\d #\e str :test #'char-equal)))
+    (parse-number:parse-number
+     (if (find #\d str :test #'char-equal)
+         str
+         (concat str "d0")))))
