@@ -32,4 +32,5 @@
            #:format-iso8601-datetime
            #:asdf-pathname
            #:containing-directory
-           #:parse-double-float))
+           #:parse-double-float
+           #:define-error))

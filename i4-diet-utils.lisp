@@ -305,3 +305,14 @@ Otherwise return the first form or NIL if the body is empty"
      (if (find #\d str :test #'char-equal)
          str
          (concat str "d0")))))
+
+(defmacro define-error (name (&rest supers) &body definition)
+  (with-gensyms (fmt args)
+    (let ((prefix (second (assoc :prefix definition))))
+      (check-type prefix (or string null))
+      `(progn
+         (define-condition ,name ,supers ,@(remove :prefix definition :key #'first))
+         (defun ,name (,fmt &rest ,args)
+           (error ',name
+                  :format-control ,(if prefix `(concat ,prefix ,fmt) fmt)
+                  :format-arguments ,args))))))
