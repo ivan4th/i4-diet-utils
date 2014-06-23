@@ -5,6 +5,7 @@
            :*dbg-timestamps*
            #:dbg-timestamp
            #:dbg
+           #:---
            #:dbg-values
 	   #:dbg*
 	   #:dbg-show
@@ -20,6 +21,7 @@
            #:trim
            #:delispize
            #:delispize*
+           #:humanize
            #:null-if-empty
            #:with-match
            #:rx-match-case

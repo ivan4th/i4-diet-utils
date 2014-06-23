@@ -25,6 +25,9 @@ Otherwise return the first form or NIL if the body is empty"
             (dbg-timestamp)
             fmt args)))
 
+(defun --- ()
+  (dbg "-----------------------------------------------------"))
+
 (defmacro dbg* (title &rest args)
   (flet ((arg-ex (arg)
 	   `(list ',arg ,arg)))
@@ -118,14 +121,15 @@ Otherwise return the first form or NIL if the body is empty"
               (char-upcase (char result 0)))
         result)))
 
-(defun delispize (name &optional camel-case spaces-p)
+(defun %delispize (name &optional camel-case spaces-p human-p)
   (setf name (string-downcase name))
   (labels ((rec (start)
              (let* ((pos (position #\- name :start start))
                     (sub (subseq name start pos))
-                    (seg (if (and camel-case (zerop start))
-                            sub
-                            (capitalize sub))))
+                    (seg (if (or (and camel-case (zerop start))
+                                 (and human-p (plusp start)))
+                             sub
+                             (capitalize sub))))
                (if pos
                    (concatenate 'string
                                 seg
@@ -135,10 +139,16 @@ Otherwise return the first form or NIL if the body is empty"
     ;; adjust output type, (coerce (rec 0) 'string) isn't sufficient for SBCL
     (concatenate 'string (rec 0) "")))
 
+(defun delispize (name &optional camel-case spaces-p)
+  (%delispize name camel-case spaces-p))
+
 (defun delispize* (name &optional camel-case)
   (if (stringp name)
       name
       (delispize name camel-case)))
+
+(defun humanize (name)
+  (%delispize name nil t t))
 
 (defun trim (str)
   (string-trim '(#\space #\tab #\newline #\return) (or str "")))
@@ -313,6 +323,8 @@ Otherwise return the first form or NIL if the body is empty"
       `(progn
          (define-condition ,name ,supers ,@(remove :prefix definition :key #'first))
          (defun ,name (,fmt &rest ,args)
+           ,@(when-let ((doc (second (assoc :documentation definition))))
+               (list (format nil "Signal an error of type ~s: ~a" name doc)))
            (error ',name
                   :format-control ,(if prefix `(concat ,prefix ,fmt) fmt)
                   :format-arguments ,args))))))
