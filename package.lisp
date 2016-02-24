@@ -19,6 +19,7 @@
            #:lispize
            #:capitalize
            #:trim
+           #:normalize-space
            #:delispize
            #:delispize*
            #:humanize

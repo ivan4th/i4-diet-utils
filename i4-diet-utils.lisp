@@ -153,6 +153,9 @@ Otherwise return the first form or NIL if the body is empty"
 (defun trim (str)
   (string-trim '(#\space #\tab #\newline #\return) (or str "")))
 
+(defun normalize-space (str)
+  (cl-ppcre:regex-replace-all "\\s+" (trim str) " "))
+
 (defun null-if-empty (str &optional trim-p)
   (let ((str (if trim-p (trim str) str)))
     (if (string= str "") nil str)))
