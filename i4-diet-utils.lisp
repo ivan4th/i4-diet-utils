@@ -267,13 +267,16 @@ Otherwise return the first form or NIL if the body is empty"
           "cannot convert time to UNIX timestamp: ~s" time)
   (- time +unix-epoch+))
 
-(defun format-iso8601-datetime (time &key separate-p utc-p)
+(defun format-iso8601-datetime (time &key separate-p utc-p tz)
   "Return a ISO8601 date and time string"
   (setf time (or time (get-universal-time)))
   (multiple-value-bind (second minute hour day month year day-of-week)
-      (if utc-p
-          (decode-universal-time time 0)
-          (decode-universal-time time))
+      (cond (utc-p
+             (decode-universal-time time 0))
+            (tz
+             (decode-universal-time time tz))
+            (t
+             (decode-universal-time time)))
     (declare (ignore day-of-week))
     (with-standard-io-syntax
         (format nil "~4,'0d-~2,'0d-~2,'0d~a~2,'0d:~2,'0d:~2,'0d~a"
