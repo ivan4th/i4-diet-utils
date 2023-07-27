@@ -36,4 +36,5 @@
            #:asdf-pathname
            #:containing-directory
            #:parse-double-float
-           #:define-error))
+           #:define-error
+           #:unbase))
